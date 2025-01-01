@@ -1,14 +1,14 @@
-import { Link, router } from 'expo-router';
-import { Pressable, StyleSheet, Text, View } from 'react-native';
+import { StyleSheet, Text, View } from 'react-native';
+
+import { envVariables } from '@/common/utils';
 
 export default function HomePage() {
   return (
     <View style={styles.container}>
       <Text style={styles.title}>Home</Text>
-      <Link href="/users/1">Go to user 1</Link>
-      <Pressable onPress={() => router.push('/users/2')}>
-        <Text>Go to user 2</Text>
-      </Pressable>
+      <Text>API_ENDPOINT: {envVariables.API_ENDPOINT}</Text>
+      <Text>JWT_ACCESS_SECRET: {envVariables.JWT_ACCESS_SECRET}</Text>
+      <Text>JWT_REFRESH_SECRET: {envVariables.JWT_REFRESH_SECRET}</Text>
     </View>
   );
 }
