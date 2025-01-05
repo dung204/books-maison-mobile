@@ -1,9 +1,0 @@
-{
-  "expo": {
-    "name": "books-maison-mobile",
-    "slug": "books-maison-mobile",
-    "version": "1.0.0",
-    "plugins": ["expo-router"],
-    "scheme": "booksmaison"
-  }
-}
