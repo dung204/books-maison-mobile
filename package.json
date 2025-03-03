@@ -99,8 +99,12 @@
   },
   "private": true,
   "lint-staged": {
-    "*.{ts,tsx}": [
-      "eslint --fix"
+    "*.{js,jsx,ts,tsx}": [
+      "eslint --fix",
+      "prettier --write --ignore-unknown"
+    ],
+    "*.{json,md,css,scss,less,html,yml,yaml}": [
+      "prettier --write --ignore-unknown"
     ]
   }
 }
