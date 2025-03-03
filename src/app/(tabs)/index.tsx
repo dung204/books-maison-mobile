@@ -1,26 +1,10 @@
-import { Link, router } from 'expo-router';
-import { Pressable, StyleSheet, Text, View } from 'react-native';
+import { Center } from '@/components/ui/center';
+import { Heading } from '@/components/ui/heading';
 
-export default function HomePage() {
+export default function HomeScreen() {
   return (
-    <View style={styles.container}>
-      <Text style={styles.title}>Home</Text>
-      <Link href="/users/1">Go to user 1</Link>
-      <Pressable onPress={() => router.push('/users/2')}>
-        <Text>Go to user 2</Text>
-      </Pressable>
-    </View>
+    <Center className="h-full">
+      <Heading>Home</Heading>
+    </Center>
   );
 }
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  title: {
-    fontSize: 20,
-    fontWeight: 'bold',
-  },
-});

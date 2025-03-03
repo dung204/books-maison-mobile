@@ -5,8 +5,12 @@
   "singleQuote": true,
   "arrowParens": "avoid",
   "tabWidth": 2,
-  "plugins": ["@trivago/prettier-plugin-sort-imports"],
+  "plugins": [
+    "@trivago/prettier-plugin-sort-imports",
+    "prettier-plugin-tailwindcss"
+  ],
   "importOrder": ["^@/(.*)$", "^[./]"],
   "importOrderSeparation": true,
-  "importOrderSortSpecifiers": true
+  "importOrderSortSpecifiers": true,
+  "tailwindFunctions": ["tva"]
 }
