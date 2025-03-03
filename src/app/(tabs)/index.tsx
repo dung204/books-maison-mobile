@@ -1,16 +1,7 @@
-import { StyleSheet, Text, View } from 'react-native';
-
-import { envVariables } from '@/common/utils';
+import { StyleSheet, View } from 'react-native';
 
 export default function HomePage() {
-  return (
-    <View style={styles.container}>
-      <Text style={styles.title}>Home</Text>
-      <Text>API_ENDPOINT: {envVariables.API_ENDPOINT}</Text>
-      <Text>JWT_ACCESS_SECRET: {envVariables.JWT_ACCESS_SECRET}</Text>
-      <Text>JWT_REFRESH_SECRET: {envVariables.JWT_REFRESH_SECRET}</Text>
-    </View>
-  );
+  return <View style={styles.container}></View>;
 }
 
 const styles = StyleSheet.create({
