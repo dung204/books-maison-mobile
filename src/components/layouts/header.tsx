@@ -1,3 +1,4 @@
+import { router } from 'expo-router';
 import { SearchIcon } from 'lucide-react-native';
 
 import { AppIcon } from '@/components/ui/app-icon';
@@ -10,7 +11,10 @@ export function Header() {
       <AppIcon />
       <Box className="flex-row items-center gap-[16]">
         <SearchIcon color="black" />
-        <Button className="w-[77] rounded-[4]">
+        <Button
+          className="w-[77] rounded-[4]"
+          onPress={() => router.push('/login')}
+        >
           <ButtonText>Login</ButtonText>
         </Button>
       </Box>

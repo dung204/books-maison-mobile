@@ -39,6 +39,13 @@ export default function RootLayout() {
       <QueryClientProvider client={queryClient}>
         <Stack>
           <Stack.Screen name="(tabs)" options={{ header: () => <Header /> }} />
+          <Stack.Screen
+            name="(auth)/login"
+            options={{
+              headerShown: false,
+              animation: 'fade_from_bottom',
+            }}
+          />
         </Stack>
       </QueryClientProvider>
     </GluestackUIProvider>
