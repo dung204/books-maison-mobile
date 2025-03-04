@@ -1,13 +1,11 @@
 import { zodResolver } from '@hookform/resolvers/zod';
-import { Link, router } from 'expo-router';
-import { ArrowLeftIcon } from 'lucide-react-native';
-import { useEffect, useState } from 'react';
+import { Link } from 'expo-router';
+import { useContext, useEffect, useState } from 'react';
 import React from 'react';
 import { Controller, useForm } from 'react-hook-form';
-import { Keyboard, TouchableHighlight } from 'react-native';
+import { Keyboard } from 'react-native';
 
 import { type LoginSchema, loginSchema } from '@/common/types/api/auth';
-import { AppLogo } from '@/components/ui/app-logo';
 import { Box } from '@/components/ui/box';
 import { Button, ButtonText } from '@/components/ui/button';
 import {
@@ -20,58 +18,9 @@ import {
 import { Input, InputField } from '@/components/ui/input';
 import { Text } from '@/components/ui/text';
 
+import { AuthNavigationContext } from './_layout';
+
 export default function LoginScreen() {
-  const [gap, setGap] = useState(32);
-
-  useEffect(() => {
-    const keyboardDidShowListener = Keyboard.addListener(
-      'keyboardDidShow',
-      () => {
-        setGap(16);
-      },
-    );
-    const keyboardDidHideListener = Keyboard.addListener(
-      'keyboardDidHide',
-      () => {
-        setGap(32);
-      },
-    );
-
-    return () => {
-      keyboardDidHideListener.remove();
-      keyboardDidShowListener.remove();
-    };
-  }, []);
-
-  return (
-    <Box className="flex-1 flex-col bg-white">
-      <Box className="basis-[60] flex-row items-center px-[14]">
-        <TouchableHighlight
-          underlayColor="#DDDDDD"
-          onPress={() => router.back()}
-          className="rounded-full p-[6]"
-        >
-          <ArrowLeftIcon color="black" size={24} />
-        </TouchableHighlight>
-      </Box>
-      <Box className="flex-1 flex-col items-center justify-around px-[16]">
-        <Box className="flex-col items-center" style={{ gap }}>
-          <AppLogo className="scale-75" />
-          <Text className="text-3xl font-extralight">
-            Login to Books Maison
-          </Text>
-        </Box>
-        <LoginForm />
-        <Text className="text-center text-sm">
-          Your continued use of this application means you agree to our terms of
-          use
-        </Text>
-      </Box>
-    </Box>
-  );
-}
-
-function LoginForm() {
   const {
     control,
     handleSubmit,
@@ -79,6 +28,7 @@ function LoginForm() {
   } = useForm({
     resolver: zodResolver(loginSchema),
   });
+  const { setBackCount } = useContext(AuthNavigationContext);
   const [gap, setGap] = useState(32);
 
   useEffect(() => {
@@ -172,7 +122,11 @@ function LoginForm() {
       </Button>
       <Text className="text-center">
         Don't have an account?{' '}
-        <Link href="/register" className="text-blue-500 underline">
+        <Link
+          href="/register"
+          className="text-blue-500 underline"
+          onPress={() => setBackCount(prevCount => Math.min(prevCount + 1, 2))}
+        >
           Create an account
         </Link>
       </Text>
