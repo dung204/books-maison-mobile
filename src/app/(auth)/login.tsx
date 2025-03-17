@@ -1,10 +1,16 @@
 import { zodResolver } from '@hookform/resolvers/zod';
+import { useMutation } from '@tanstack/react-query';
+import { type AxiosError, HttpStatusCode } from 'axios';
 import { Link } from 'expo-router';
+import { CircleCheckIcon } from 'lucide-react-native';
 import { useContext, useEffect, useState } from 'react';
 import React from 'react';
 import { Controller, useForm } from 'react-hook-form';
 import { Keyboard } from 'react-native';
 
+import { useAuth, useToast } from '@/common/hooks';
+import { asyncStorageService } from '@/common/services';
+import { AsyncStorageKey } from '@/common/types';
 import { type LoginSchema, loginSchema } from '@/common/types/api/auth';
 import { Box } from '@/components/ui/box';
 import { Button, ButtonText } from '@/components/ui/button';
@@ -17,6 +23,7 @@ import {
 } from '@/components/ui/form-control';
 import { Input, InputField } from '@/components/ui/input';
 import { Text } from '@/components/ui/text';
+import { authHttpClient } from '@/lib/http';
 
 import { AuthNavigationContext } from './_layout';
 
@@ -28,7 +35,36 @@ export default function LoginScreen() {
   } = useForm({
     resolver: zodResolver(loginSchema),
   });
-  const { setBackCount } = useContext(AuthNavigationContext);
+
+  const toast = useToast();
+
+  const { setBackCount, handleGoBack } = useContext(AuthNavigationContext);
+
+  const { authenticate } = useAuth();
+
+  const { mutateAsync: triggerLogin, isPending } = useMutation({
+    mutationFn: (payload: LoginSchema) => authHttpClient.login(payload),
+    onSuccess: async ({ data }) => {
+      await asyncStorageService.set(
+        AsyncStorageKey.ACCESS_TOKEN,
+        data.accessToken,
+      );
+      await asyncStorageService.set(
+        AsyncStorageKey.REFRESH_TOKEN,
+        data.refreshToken,
+      );
+      await authenticate(true);
+      handleGoBack();
+    },
+    onError: (error: AxiosError) => {
+      if (error.response?.status === HttpStatusCode.Unauthorized) {
+        toast.error({
+          description: 'Invalid email or password',
+        });
+      }
+    },
+  });
+
   const [gap, setGap] = useState(32);
 
   useEffect(() => {
@@ -51,13 +87,13 @@ export default function LoginScreen() {
     };
   }, []);
 
-  const onSubmit = (payload: LoginSchema) => {
-    console.log(payload);
+  const onSubmit = async (payload: LoginSchema) => {
+    await triggerLogin(payload);
   };
 
   return (
     <Box className="w-full" style={{ gap }}>
-      <FormControl isInvalid={!!errors.email}>
+      <FormControl isInvalid={!!errors.email} isDisabled={isPending}>
         <Controller
           control={control}
           name="email"
@@ -85,7 +121,7 @@ export default function LoginScreen() {
         </FormControlError>
       </FormControl>
 
-      <FormControl isInvalid={!!errors.password}>
+      <FormControl isInvalid={!!errors.password} isDisabled={isPending}>
         <Controller
           control={control}
           name="password"
@@ -114,10 +150,10 @@ export default function LoginScreen() {
         </FormControlError>
       </FormControl>
 
-      <Button onPress={handleSubmit(onSubmit)}>
+      <Button onPress={handleSubmit(onSubmit)} isDisabled={isPending}>
         <ButtonText>Login</ButtonText>
       </Button>
-      <Button action="negative">
+      <Button action="negative" isDisabled={isPending}>
         <ButtonText>Continue with Google</ButtonText>
       </Button>
       <Text className="text-center">
@@ -126,6 +162,7 @@ export default function LoginScreen() {
           href="/register"
           className="text-blue-500 underline"
           onPress={() => setBackCount(prevCount => Math.min(prevCount + 1, 2))}
+          disabled={isPending}
         >
           Create an account
         </Link>

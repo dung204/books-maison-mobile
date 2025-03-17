@@ -1,6 +1,7 @@
 import type { CommonSearchParams, SuccessResponse } from '@/common/types';
 import type { Transaction } from '@/common/types/api/transaction';
-import { HttpClient } from '@/lib/http';
+
+import { HttpClient } from './core.http';
 
 class TransactionHttpClient extends HttpClient {
   public getTransactionsOfCurrentUser(params?: CommonSearchParams) {

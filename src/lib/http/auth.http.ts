@@ -9,7 +9,8 @@ import type {
   RegisterSchema,
 } from '@/common/types/api/auth';
 import type { User } from '@/common/types/api/user';
-import { HttpClient } from '@/lib/http';
+
+import { HttpClient } from './core.http';
 
 class AuthHttpClient extends HttpClient {
   public login(data: LoginSchema) {

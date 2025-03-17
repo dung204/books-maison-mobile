@@ -3,7 +3,8 @@ import type {
   Category,
   CategorySearchParams,
 } from '@/common/types/api/category';
-import { HttpClient } from '@/lib/http';
+
+import { HttpClient } from './core.http';
 
 class CategoryHttpClient extends HttpClient {
   public getAllCategories(params?: CategorySearchParams) {

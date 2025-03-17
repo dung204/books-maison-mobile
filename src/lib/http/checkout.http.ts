@@ -3,7 +3,8 @@ import type {
   Checkout,
   CheckoutSearchParams,
 } from '@/common/types/api/checkout';
-import { HttpClient } from '@/lib/http';
+
+import { HttpClient } from './core.http';
 
 class CheckoutHttpClient extends HttpClient {
   public getCheckoutsOfCurrentUser(params?: CheckoutSearchParams) {

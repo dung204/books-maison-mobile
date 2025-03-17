@@ -1,6 +1,7 @@
 import type { SuccessResponse } from '@/common/types';
 import type { Book, BookSearchParams } from '@/common/types/api/book';
-import { HttpClient } from '@/lib/http';
+
+import { HttpClient } from './core.http';
 
 class FavouriteBookHttpClient extends HttpClient {
   getAllFavouriteBooksOfCurrentUser(params: BookSearchParams) {

@@ -1,5 +1,5 @@
 import { Slot, router, usePathname } from 'expo-router';
-import { ArrowLeftIcon } from 'lucide-react-native';
+import { XIcon } from 'lucide-react-native';
 import {
   type Dispatch,
   type SetStateAction,
@@ -16,17 +16,23 @@ import { Text } from '@/components/ui/text';
 type AuthNavigationContextValue = {
   backCount: number;
   setBackCount: Dispatch<SetStateAction<number>>;
+  handleGoBack: () => void;
 };
 
 export const AuthNavigationContext = createContext<AuthNavigationContextValue>({
   backCount: 1,
   setBackCount: () => {},
+  handleGoBack: () => {},
 });
 
 export default function AuthLayout() {
   const [backCount, setBackCount] = useState(1);
   const [gap, setGap] = useState(32);
   const pathname = usePathname();
+
+  const handleGoBack = () => {
+    Array.from({ length: backCount }).forEach(() => router.back());
+  };
 
   useEffect(() => {
     const keyboardDidShowListener = Keyboard.addListener(
@@ -49,17 +55,17 @@ export default function AuthLayout() {
   }, []);
 
   return (
-    <AuthNavigationContext.Provider value={{ backCount, setBackCount }}>
+    <AuthNavigationContext.Provider
+      value={{ backCount, setBackCount, handleGoBack }}
+    >
       <Box className="flex-1 flex-col bg-white">
         <Box className="basis-[60] flex-row items-center px-[14]">
           <TouchableHighlight
             underlayColor="#DDDDDD"
-            onPress={() =>
-              Array.from({ length: backCount }).forEach(() => router.back())
-            }
+            onPress={handleGoBack}
             className="rounded-full p-[6]"
           >
-            <ArrowLeftIcon color="black" size={24} />
+            <XIcon color="black" size={24} />
           </TouchableHighlight>
         </Box>
         <Box className="flex-1 flex-col items-center justify-around px-[16]">

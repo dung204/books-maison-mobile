@@ -1,6 +1,7 @@
 import type { SuccessResponse } from '@/common/types';
 import type { Media } from '@/common/types/api/media';
-import { HttpClient } from '@/lib/http/core.http';
+
+import { HttpClient } from './core.http';
 
 class MediaHttpClient extends HttpClient {
   public upload(file: File, folder?: string) {

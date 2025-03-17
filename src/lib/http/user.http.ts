@@ -3,7 +3,9 @@ import type { ChangePasswordSchema } from '@/common/types/api/auth';
 import type { Avatar, ImagePosition } from '@/common/types/api/media';
 import type { User } from '@/common/types/api/user';
 import type { UpdateProfileSchema } from '@/common/types/api/user/update-profile.type';
-import { HttpClient, mediaHttpClient } from '@/lib/http';
+
+import { HttpClient } from './core.http';
+import { mediaHttpClient } from './media.http';
 
 class UserHttpClient extends HttpClient {
   public getUserProfile() {

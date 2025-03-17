@@ -10,6 +10,7 @@ import { Stack } from 'expo-router';
 import { useEffect } from 'react';
 import { AppState } from 'react-native';
 
+import { AuthProvider, ToastProvider } from '@/common/providers';
 import { Header } from '@/components/layouts/header';
 import { GluestackUIProvider } from '@/components/ui/gluestack-ui-provider';
 import '@/global.css';
@@ -37,16 +38,30 @@ export default function RootLayout() {
   return (
     <GluestackUIProvider mode="light">
       <QueryClientProvider client={queryClient}>
-        <Stack>
-          <Stack.Screen name="(tabs)" options={{ header: () => <Header /> }} />
-          <Stack.Screen
-            name="(auth)"
-            options={{
-              headerShown: false,
-              animation: 'fade_from_bottom',
-            }}
-          />
-        </Stack>
+        <ToastProvider>
+          <AuthProvider>
+            <Stack>
+              <Stack.Screen
+                name="(tabs)"
+                options={{ header: () => <Header /> }}
+              />
+              <Stack.Screen
+                name="(auth)"
+                options={{
+                  headerShown: false,
+                  animation: 'fade_from_bottom',
+                }}
+              />
+              <Stack.Screen
+                name="(user-menu)/user-menu"
+                options={{
+                  headerShown: false,
+                  animation: 'fade_from_bottom',
+                }}
+              />
+            </Stack>
+          </AuthProvider>
+        </ToastProvider>
       </QueryClientProvider>
     </GluestackUIProvider>
   );

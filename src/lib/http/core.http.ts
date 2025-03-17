@@ -5,9 +5,19 @@ import axios, {
   type AxiosResponse,
   type CreateAxiosDefaults,
   HttpStatusCode,
+  type InternalAxiosRequestConfig,
 } from 'axios';
+import { jwtDecode } from 'jwt-decode';
+
+import { asyncStorageService } from '@/common/services';
+import { AsyncStorageKey } from '@/common/types';
+import { envVariables } from '@/common/utils';
 
 interface CustomAxiosRequestConfig extends AxiosRequestConfig {
+  isPrivateRoute?: boolean;
+}
+
+interface CustomInternalAxiosRequestConfig extends InternalAxiosRequestConfig {
   isPrivateRoute?: boolean;
 }
 
@@ -15,7 +25,7 @@ class HttpClient {
   protected axiosInstance: AxiosInstance;
 
   constructor(
-    baseURL: string = process.env.NEXT_PUBLIC_API_ENDPOINT!,
+    baseURL: string = envVariables.API_ENDPOINT,
     { headers, ...otherConfigs }: Omit<CreateAxiosDefaults, 'baseURL'> = {},
   ) {
     this.axiosInstance = axios.create({
@@ -27,26 +37,74 @@ class HttpClient {
       ...otherConfigs,
     });
 
+    this.axiosInstance.interceptors.request.use(this.onSuccessRequest);
+
     this.axiosInstance.interceptors.response.use(
       this.onResponseSuccess,
       this.onResponseFailed,
     );
   }
 
-  public setupRequestInterceptors(
-    ...args: Parameters<typeof this.axiosInstance.interceptors.request.use>
-  ) {
-    this.axiosInstance.interceptors.request.use(...args);
+  protected async onSuccessRequest({
+    isPrivateRoute,
+    ...config
+  }: CustomInternalAxiosRequestConfig) {
+    if (isPrivateRoute) {
+      let accessToken: string;
+      let refreshToken: string;
+
+      try {
+        accessToken = await asyncStorageService.get(
+          AsyncStorageKey.ACCESS_TOKEN,
+          '',
+        );
+
+        const { exp } = jwtDecode(accessToken);
+        if (exp! * 1000 < Date.now()) throw new Error();
+
+        config.headers.Authorization = `Bearer ${accessToken}`;
+      } catch (accessTokenError) {
+        refreshToken = await asyncStorageService.get(
+          AsyncStorageKey.REFRESH_TOKEN,
+          '',
+        );
+        const result = (
+          await axios.post(`${envVariables.API_ENDPOINT}/auth/refresh`, {
+            refreshToken,
+          })
+        ).data.data;
+
+        asyncStorageService.set(
+          AsyncStorageKey.ACCESS_TOKEN,
+          result.accessToken,
+        );
+        asyncStorageService.set(
+          AsyncStorageKey.REFRESH_TOKEN,
+          result.refreshToken,
+        );
+
+        config.headers.Authorization = `Bearer ${result.accessToken}`;
+      }
+    }
+
+    return config;
   }
 
   protected onResponseSuccess(response: AxiosResponse) {
     return response.data;
   }
 
-  protected async onResponseFailed(error: AxiosError) {
+  protected onResponseFailed(error: AxiosError) {
     if (!error.status || error.status === HttpStatusCode.InternalServerError) {
       console.error(error);
     }
+
+    if (error.status === HttpStatusCode.Unauthorized) {
+      asyncStorageService.remove(AsyncStorageKey.ACCESS_TOKEN);
+      asyncStorageService.remove(AsyncStorageKey.REFRESH_TOKEN);
+    }
+
+    return Promise.reject(error);
   }
 
   public get<T>(url: string, config?: CustomAxiosRequestConfig) {

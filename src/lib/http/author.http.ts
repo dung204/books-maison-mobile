@@ -1,6 +1,7 @@
 import type { SuccessResponse } from '@/common/types';
 import type { Author, AuthorSearchParams } from '@/common/types/api/author';
-import { HttpClient } from '@/lib/http';
+
+import { HttpClient } from './core.http';
 
 class AuthorHttpClient extends HttpClient {
   public getAllAuthors(params?: AuthorSearchParams) {

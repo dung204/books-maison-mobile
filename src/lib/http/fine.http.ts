@@ -5,7 +5,8 @@ import {
   type Transaction,
   TransactionMethod,
 } from '@/common/types/api/transaction';
-import { HttpClient } from '@/lib/http';
+
+import { HttpClient } from './core.http';
 
 class FineHttpClient extends HttpClient {
   public getAllFinesOfCurrentUser(params?: CommonSearchParams) {
